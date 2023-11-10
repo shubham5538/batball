@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bat and Ball Game</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #gameContainer {
+            border: 2px solid #008000; /* Green border for the game container */
+            position: relative;
+            text-align: center; /* Center the content within the container */
+        }
+
+        #gameCanvas {
+            border: 1px solid #008000; /* Green border for the canvas */
+            display: block;
+            margin: 0 auto;
+        }
+
+        #scoreDisplay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+        }
+
+        #playerInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="scoreDisplay">Score: <span id="scoreValue">0</span></div>
+        <div id="playerInfo">Player: <span id="playerName"></span></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 10,
+            dx: 5,
+            dy: -5,
+        };
+
+        const bat = {
+            width: 100,
+            height: 10,
+            x: canvas.width / 2 - 50,
+            y: canvas.height - 20,
+            speed: 8,
+        };
+
+        let score = 0;
+        const scoreDisplay = document.getElementById("scoreValue");
+        const playerNameDisplay = document.getElementById("playerName");
+
+        function initializePlayerInfo() {
+            const playerName = prompt("Enter your name:") || "Anonymous";
+            localStorage.setItem("currentPlayer", playerName);
+            playerNameDisplay.textContent = playerName;
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBat() {
+            ctx.beginPath();
+            ctx.rect(bat.x, bat.y, bat.width, bat.height);
+            ctx.fillStyle = "#FF0000"; /* Red fill color for the bat */
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawScore() {
+            scoreDisplay.textContent = score;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBall();
+            drawBat();
+            drawScore();
+
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) {
+                ball.dx = -ball.dx;
+            }
+
+            if (ball.y - ball.radius < 0) {
+                ball.dy = -ball.dy;
+            }
+
+            if (
+                ball.y + ball.radius > bat.y &&
+                ball.x > bat.x &&
+                ball.x < bat.x + bat.width
+            ) {
+                ball.dy = -ball.dy;
+                score++;
+                updateScore();
+            }
+
+            if (ball.y + ball.radius > canvas.height) {
+                gameOver();
+                return;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function moveBat(e) {
+            const mouseX = e.clientX - canvas.getBoundingClientRect().left;
+            const newBatX = mouseX - bat.width / 2;
+
+            if (newBatX >= 0 && newBatX + bat.width <= canvas.width) {
+                bat.x = newBatX;
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = score;
+        }
+
+        function gameOver() {
+            alert("Game Over! Your Score: " + score);
+            const currentPlayer = localStorage.getItem("currentPlayer");
+            localStorage.removeItem("currentPlayer");
+            document.location.reload();
+        }
+
+        initializePlayerInfo();
+        document.addEventListener("mousemove", moveBat);
+        draw();
+    </script>
+</body>
+</html>
