@@ -1,7 +1,7 @@
 # batball
 
 # Bat-and-ball-game-
-Bat and ball game in HTML, CSS, JavaScript 
+Bat and ball game By using Technologies Using HTML, CSS, JavaScript.
 
 
 
