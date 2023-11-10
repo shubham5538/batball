@@ -1,4 +1,3 @@
-# batball
 
 # Bat-and-ball-game-
 Bat and ball game By using Technologies Using HTML, CSS, JavaScript.
